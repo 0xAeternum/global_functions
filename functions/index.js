@@ -82,3 +82,14 @@ exports.createMockDataAttractions = functions.https.onRequest(async (req, res) =
     result: 'success'
   })
 })
+
+exports.createdAtAttraction = functions.firestore.document('attraction/{attractionId}').onCreate((snap, context) => {
+  return snap.ref.set({
+    created_at: firebase.firestore.FieldValue.serverTimestamp()
+  }, {
+    merge: true
+    }).catch(err => {
+      console.log(err)
+      return false;
+  })
+})
