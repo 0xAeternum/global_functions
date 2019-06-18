@@ -93,3 +93,14 @@ exports.createdAtAttraction = functions.firestore.document('attraction/{attracti
       return false;
   })
 })
+
+exports.updatedAtAttraction = functions.firestore.document('attraction/{attractionId}').onUpdate((snap, context) => {
+  return snap.ref.set({
+    updated_at: firebase.firestore.FieldValue.serverTimestamp()
+  }, {
+    merge: true
+    }).catch(err => {
+      console.log(err)
+      return false;
+  })
+})
