@@ -10,6 +10,9 @@
   "license": "ISC",
   "dependencies": {
     "firebase-admin": "^8.0.0",
-    "firebase-functions": "^2.3.1"
+    "firebase-functions": "^2.3.1",
+    "geolib": "^3.0.3",
+    "robust-point-in-polygon": "^1.0.3",
+    "spherical-geometry-js": "^1.4.0"
   }
 }
