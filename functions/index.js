@@ -9,6 +9,10 @@ firebase.initializeApp({
   databaseURL: "https://fir-test-c91f4.firebaseio.com"
 });
 
+// CORS Express middleware to enable CORS Requests.
+const cors = require('cors')({
+  origin: true,
+});
 
 function mode(arr){
   return arr.slice().sort((a,b) =>
@@ -106,39 +110,41 @@ exports.updatedAtAttraction = functions.firestore.document('attraction/{attracti
 })
 
 exports.checkArea = functions.https.onRequest(async (req, res) => {
-  var classifyPoint = require("robust-point-in-polygon")
+  return cors(req, res, () => {
+    var classifyPoint = require("robust-point-in-polygon")
 
-  var blueArea = [[52.9304, 6.7989], [52.9307, 6.7992], [52.9304, 6.7998], [52.9301, 6.7992]] // The boulder garden, BG
-  
-  var redArea = [[52.930076, 6.799321], [52.930596, 6.797672], 52.929933, 6.797294] // hunebed d27, D27
-  
-  var purpleArea = [[52.931099, 6.797143], [52.931377, 6.797508], [52.931219, 6.797897], [52.930867, 6.797412]] // hundsdrug geopark expedition gateway, HGEG
-  
-  var yellowArea = [[52.931458, 6.797540], [52.931930, 6.798222], [52.930994, 6.801008], [52.930527, 6.800190]] // prehistoric park, PP
-  
-  var greenArea = [[52.930553, 6.799040], [52.931019, 6.798691], [52.930901, 6.798138], [52.930441, 6.798763]] // Hunebed Centrum, HC
-  
-  let place = findPlace(req.query.x, req.query.y)
+    var blueArea = [[52.9304, 6.7989], [52.9307, 6.7992], [52.9304, 6.7998], [52.9301, 6.7992]] // The boulder garden, BG
+    
+    var redArea = [[52.930076, 6.799321], [52.930596, 6.797672], [52.929933, 6.797294]] // hunebed d27, D27
+    
+    var purpleArea = [[52.931099, 6.797143], [52.931377, 6.797508], [52.931219, 6.797897], [52.930867, 6.797412]] // hundsdrug geopark expedition gateway, HGEG
+    
+    var yellowArea = [[52.931458, 6.797540], [52.931930, 6.798222], [52.930994, 6.801008], [52.930527, 6.800190]] // prehistoric park, PP
+    
+    var greenArea = [[52.930553, 6.799040], [52.931019, 6.798691], [52.930901, 6.798138], [52.930441, 6.798763]] // Hunebed Centrum, HC
+    
+    let place = findPlace(req.query.x, req.query.y)
+    
+    //res.status(200).send(place);
 
-  res.json({
-    result: place
-  })
-  
-  function findPlace(x, y) {
-  
-    if (classifyPoint(redArea, [x, y]) != 1) {
-      return 'D27';
-    } else if (classifyPoint(blueArea, [x, y]) != 1) {
-      return 'BG'
-    } else if (classifyPoint(purpleArea, [x, y]) != 1) {
-      return 'HGEG'
-    } else if (classifyPoint(yellowArea, [x, y]) != 1) {
-      return 'PP'
-    } else if (classifyPoint(greenArea, [x, y]) != 1) {
-      return 'HC'
-    } else {
-      return 'NONE'
+    res.json({
+      result: place
+    })
+
+    function findPlace(x, y) {
+      if (classifyPoint(redArea, [x, y]) != 1) {
+        return 'D27';
+      } else if (classifyPoint(blueArea, [x, y]) != 1) {
+        return 'BG'
+      } else if (classifyPoint(purpleArea, [x, y]) != 1) {
+        return 'HGEG'
+      } else if (classifyPoint(yellowArea, [x, y]) != 1) {
+        return 'PP'
+      } else if (classifyPoint(greenArea, [x, y]) != 1) {
+        return 'HC'
+      } else {
+        return 'NONE'
+      }
     }
-  
-  }
+  })
 })
